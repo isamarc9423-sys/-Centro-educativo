@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal del Personal</title>
+<style>
+:root{
+  --bg:#f3f5f9;--surface:#fff;--ink:#1c2740;--muted:#5d6b86;--line:#e3e8f0;
+  --brand:#14407a;--brand-ink:#fff;--gold:#c79a2e;--ok:#0f6b2f;--ok-bg:#e3f4e8;--warn-bg:#fff4d6;--warn:#7a5a00;--bad:#9b1c1c;--bad-bg:#fde8e8;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1522;--surface:#162033;--ink:#e8edf6;--muted:#9aa8c2;--line:#26334d;--brand:#5b9bf0;--brand-ink:#0b1424;--gold:#e0b64a;
+  --ok:#6fd592;--ok-bg:#12301f;--warn-bg:#3a2f0e;--warn:#f0cf74;--bad:#f59b9b;--bad-bg:#3b1717;}}
+:root[data-theme="dark"]{--bg:#0e1522;--surface:#162033;--ink:#e8edf6;--muted:#9aa8c2;--line:#26334d;--brand:#5b9bf0;--brand-ink:#0b1424;--gold:#e0b64a;
+  --ok:#6fd592;--ok-bg:#12301f;--warn-bg:#3a2f0e;--warn:#f0cf74;--bad:#f59b9b;--bad-bg:#3b1717;}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+button,select,input{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:var(--brand);color:var(--brand-ink)}
+.logo{display:flex;align-items:center;gap:10px;font-family:Georgia,serif;font-size:18px}
+.crest{width:46px;height:46px;flex:none;overflow:hidden;background:rgba(255,255,255,.12);border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;font-size:14px;font-weight:700}
+.logo small{display:block;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:12px;line-height:1.3;opacity:.9}.crest img{width:100%;height:100%;object-fit:cover}
+.right{display:flex;align-items:center;gap:10px;font-size:14px}
+.roles{display:flex;background:rgba(255,255,255,.14);border-radius:8px;padding:3px}
+.roles button{border:0;background:none;color:inherit;padding:6px 12px;border-radius:6px;font-size:14px}
+.roles button.on{background:var(--gold);color:#1c2740;font-weight:600}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--gold);color:#1c2740;display:grid;place-items:center;font-weight:700}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 58px)}
+nav{padding:22px 16px;border-right:1px solid var(--line);background:var(--surface)}
+nav p{margin:18px 8px 6px;color:var(--muted);font-size:12px}
+nav button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:9px 10px;border-radius:6px}
+nav button:hover{background:var(--bg)}
+nav button.on{background:var(--brand);color:var(--brand-ink)}
+main{padding:28px clamp(16px,4vw,48px);max-width:1040px;width:100%}
+main h1{font-size:30px}
+.sub{color:var(--muted);margin:4px 0 20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-bottom:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:18px}
+.grid .card{margin:0}
+.body{padding:18px 20px}
+.card h3{font-size:19px;margin-bottom:4px}
+.card p{margin:0;color:var(--muted)}
+.go{display:flex;justify-content:space-between;width:100%;border:0;border-top:1px solid var(--line);background:none;color:var(--brand);padding:12px 20px;font-weight:600}
+.stat b{display:block;font-family:Georgia,serif;font-size:32px;line-height:1.1}
+.banner{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--warn-bg);color:var(--warn);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:20px}
+.banner b{display:block;font-size:17px;font-family:Georgia,serif}
+.pill{display:inline-block;background:var(--ok-bg);color:var(--ok);font-size:12px;padding:2px 9px;border-radius:99px;font-weight:600}
+.pill.w{background:var(--warn-bg);color:var(--warn)}.pill.b{background:var(--bad-bg);color:var(--bad)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{background:var(--bg);font-size:13px;color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}
+.btn{background:var(--brand);color:var(--brand-ink);border:0;border-radius:6px;padding:8px 14px;font-weight:600}
+.btn.o{background:none;color:var(--brand);border:1px solid var(--brand)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+.tabs button{border:0;background:none;color:var(--muted);padding:10px 14px;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--brand);border-color:var(--brand);font-weight:600}
+.row{display:grid;grid-template-columns:150px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row span:first-child{color:var(--muted)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.bar select,.bar input[type=search]{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input[type=number]{width:70px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--brand)}
+.done td:nth-child(2){text-decoration:line-through;color:var(--muted)}
+.fm{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.fm label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:13px}.fm input,.fm select{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:15px}.chk{display:flex;gap:8px;align-items:center;padding:6px 0}
+.g1{--sc:#1f9d55}.g2{--sc:#d6478f}.g3{--sc:#8a4fd0}.g4{--sc:#2f6fd0}.g5{--sc:#e08a2c}.g6{--sc:#d23b3b}
+.sec{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;background:color-mix(in srgb,var(--sc) 18%,var(--surface));color:var(--ink)}
+.sec::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--sc)}
+td select{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.auth-card{width:min(420px,100%)}#auth{min-height:calc(100vh - 58px);display:grid;place-items:center;padding:20px}#auth:empty{display:none}
+.alogo{width:88px;height:88px;background:var(--brand);color:var(--brand-ink);font-size:30px}
+#af input,#af select{background:color-mix(in srgb,var(--brand) 12%,var(--surface));padding:11px 12px;width:100%}
+#auth a{color:var(--brand)}
+.vf{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface);min-height:50px;display:flex;align-items:center}
+.vok{width:26px;height:26px;border-radius:50%;background:#1f9d55;color:#fff;display:inline-grid;place-items:center;font-size:15px}
+.menu-btn{display:none;background:none;border:1px solid currentColor;color:inherit;border-radius:6px;padding:4px 10px}
+@media (max-width:760px){
+  .layout{grid-template-columns:1fr}
+  nav{display:none;border-right:0;border-bottom:1px solid var(--line)}
+  nav.open{display:block}
+  .menu-btn{display:block}
+  .top{flex-wrap:wrap}
+  .who{display:none}
+  .logo small{max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><div class="crest" id="crest">CH</div><div><div id="cn">Colegio Horizonte</div><small id="ci"></small></div></div>
+  <div class="right" id="rt" style="display:none">
+    <div class="roles" style="display:none" role="group" aria-label="Cambiar perfil">
+      <button data-r="docente" class="on">Docente</button>
+      <button data-r="admin">Administración</button>
+      <button data-r="secre">Secretaría</button>
+      <button data-r="apoyo">Apoyo</button>
+    </div>
+    <span class="who" id="who"></span><div class="avatar" id="av"></div>
+    <button class="btn o" id="out" style="display:none;color:inherit;border-color:currentColor">Cerrar sesión</button><button class="menu-btn" id="mb">Menú</button>
+  </div>
+</header>
+<div id="auth"></div>
+<div class="layout" id="app" style="display:none"><nav id="nav" aria-label="Menú principal"></nav><main id="main"></main></div>
+<script>
+const P={
+ docente:{name:'Prof. Laura Méndez',ini:'L',role:'Docente de Matemática',
+  nav:[['Menú',[['inicio','Inicio'],['cursos','Mis cursos'],['horario','Mi horario']]],['Gestión académica',[['asistencia','Pasar asistencia'],['notas','Registrar calificaciones']]],['Comunicación',[['avisos','Comunicados']]],['Cuenta',[['perfil','Mi perfil']]]]},
+ admin:{name:'Lic. Roberto Díaz',ini:'R',role:'Dirección administrativa',
+  nav:[['Menú',[['inicio','Inicio']]],['Gestión',[['registro','Registrar estudiante'],['estudiantes','Estudiantes'],['expedientes','Expedientes'],['personal','Personal'],['tesoreria','Tesorería'],['usuarios','Usuarios y accesos'],['secciones','Secciones y áreas'],['centro','Datos del centro']]],['Comunicación',[['avisos','Comunicados']]],['Cuenta',[['perfil','Mi perfil']]]]},
+ apoyo:{name:'Marta Jiménez',ini:'M',role:'Personal de apoyo · Conserjería',
+  nav:[['Menú',[['inicio','Inicio']]],['Mi trabajo',[['tareas','Tareas del día'],['solicitudes','Solicitudes'],['turnos','Mis turnos']]],['Comunicación',[['avisos','Comunicados']]],['Cuenta',[['perfil','Mi perfil']]]]},
+ secre:{name:'Carmen Ortiz',ini:'C',role:'Secretaría académica',
+  nav:[['Menú',[['inicio','Inicio']]],['Estudiantes',[['registro','Registrar estudiante'],['estudiantes','Lista de estudiantes'],['expedientes','Expedientes por grado'],['secciones','Secciones y áreas']]],['Comunicación',[['avisos','Comunicados']]],['Cuenta',[['perfil','Mi perfil']]]]}
+};
+const T=(h,rows)=>`<div class="card scroll"><table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const pill=(t,c='')=>`<span class="pill ${c}">${t}</span>`;
+const head=(t,s)=>`<h1>${t}</h1><p class="sub">${s}</p>`;
+const stat=(n,l)=>`<div class="card"><div class="body stat"><b>${n}</b><p>${l}</p></div></div>`;
+const link=(t,d,v,l)=>`<div class="card"><div class="body"><h3>${t}</h3><p>${d}</p></div><button class="go" data-go="${v}">${l} <span>›</span></button></div>`;
+const avisos=()=>head('Comunicados','Avisos oficiales del colegio para el personal.')+T(['Fecha','Asunto','Dirigido a'],[
+ ['16 oct','Reunión general de personal, viernes 8:00 AM','Todo el personal'],['12 oct','Cierre de calificaciones del primer período','Docentes'],['9 oct','Simulacro de evacuación','Todo el personal'],['5 oct','Entrega de uniformes de trabajo','Apoyo']]);
+const perfil=()=>head('Mi perfil','Información de tu cuenta. Por favor, mantén tus datos actualizados.')+`<div class="tabs"><button class="on" data-t="0">Información general</button><button data-t="1">Colegio</button><button data-t="2">Seguridad</button></div>
+<div class="card"><div class="body">
+<div class="tp"><div class="row"><span>Nombre</span><span>${P[role].name}</span></div><div class="row"><span>Cargo</span><span>${P[role].role}</span></div><div class="row"><span>Código de empleado</span><span>EMP-0${{docente:'231',admin:'018',apoyo:'307',secre:'254'}[role]}</span></div><div class="row"><span>Teléfono</span><span>809-555-0148</span></div></div>
+<div class="tp" hidden><div class="row"><span>Sede</span><span>Sede central</span></div><div class="row"><span>Ingreso</span><span>3 de agosto de 2019</span></div><div class="row"><span>Estado</span><span>${pill('Activo')}</span></div></div>
+<div class="tp" hidden><h3>Seguridad de la cuenta</h3><p style="margin:2px 0 14px">Estas opciones ayudan a mantener tu cuenta segura.</p><div class="row" style="grid-template-columns:1fr auto"><span><b style="color:var(--ink)">Guardar mis registros de actividad</b><br>Almacena los inicios de sesión, incluidos los inusuales.</span><input type="checkbox" checked aria-label="Guardar registros"></div><p style="margin-top:14px"><button class="btn o">Cambiar contraseña</button></p></div>
+</div></div>`;
+const V={
+docente:{
+ inicio:()=>head('Bienvenido(a), '+P.docente.name,'Administra tus cursos, asistencia y calificaciones.')+`<div class="banner"><div><b>Cierre de calificaciones: 30 de octubre</b>Tienes 2 cursos con notas pendientes.</div><button class="btn" data-go="notas">Registrar notas</button></div><div class="grid">${stat(4,'cursos asignados')}${stat(112,'estudiantes a tu cargo')}${stat('94%','asistencia promedio')}</div><div class="grid">${link('Pasar asistencia','Registra la asistencia de tu clase de hoy.','asistencia','Abrir lista')}${link('Calificaciones','Ingresa y revisa notas por parcial.','notas','Ir a calificaciones')}${link('Mis cursos','Consulta grupos, aulas y horarios.','cursos','Ver cursos')}</div>`,
+ cursos:()=>head('Mis cursos','Grupos asignados en el período actual.')+T(['Código','Asignatura','Grupo','Aula','Estudiantes'],[['MAT-201','Matemática','2.º B','Aula 12','28'],['MAT-201','Matemática','2.º C','Aula 12','27'],['MAT-301','Matemática','3.º A','Aula 14','30'],['MAT-101','Matemática','1.º A','Aula 09','27']]),
+ horario:()=>head('Mi horario','Horario semanal de clases.')+T(['Hora','Lunes','Martes','Miércoles','Jueves','Viernes'],[['8:00 – 9:30','2.º B','1.º A','2.º B','3.º A','2.º C'],['9:45 – 11:15','2.º C','—','3.º A','1.º A','—'],['11:30 – 1:00','—','3.º A','—','2.º C','2.º B']]),
+ asistencia:()=>head('Pasar asistencia','Matemática · 2.º B · hoy, 19 de octubre.')+`<div class="card scroll"><table id="att"><tr><th>Estudiante</th><th>Presente</th></tr>${['Ana María Pérez','Carlos Almonte','Daniela Rosario','Esteban Reyes','Fiorella Núñez','Gabriel Santana'].map(n=>`<tr><td>${n}</td><td><input type="checkbox" checked aria-label="Presente ${n}"></td></tr>`).join('')}</table></div><button class="btn" id="saveAtt">Guardar asistencia</button> <span id="msg"></span>`,
+ notas:()=>head('Registrar calificaciones','Matemática · 2.º B · Parcial 2.')+`<div class="card scroll"><table><tr><th>Estudiante</th><th>Parcial 1</th><th>Parcial 2</th></tr>${[['Ana María Pérez',92],['Carlos Almonte',85],['Daniela Rosario',78],['Esteban Reyes',88]].map(([n,v])=>`<tr><td>${n}</td><td>${v}</td><td><input type="number" min="0" max="100" aria-label="Nota ${n}"></td></tr>`).join('')}</table></div><button class="btn" id="saveAtt">Guardar calificaciones</button> <span id="msg"></span>`,
+ avisos,perfil},
+admin:{
+ inicio:()=>head('Bienvenido(a), '+P.admin.name,'Resumen general del colegio.')+`<div class="grid">${stat(412,'estudiantes inscritos')}${stat(38,'docentes y personal')}</div><div class="banner"><div><b>Reinscripciones abiertas hasta el 15 de noviembre</b>Faltan 63 familias por reinscribir.</div><button class="btn" data-go="estudiantes">Ver lista</button></div><div class="grid">${link('Registrar estudiante','Crea el expediente de un nuevo ingreso.','registro','Nuevo registro')}${link('Expedientes','Carpeta digital con los documentos de cada estudiante.','expedientes','Ver expedientes')}${link('Personal','Docentes y personal de apoyo.','personal','Administrar')}</div>`,
+ estudiantes:()=>head('Estudiantes','Matrícula del año escolar.')+`<p><button class="btn" data-go="registro">Registrar estudiante</button></p>`+`<div class="bar"><input type="search" placeholder="Buscar por nombre o matrícula" aria-label="Buscar"><select aria-label="Grado"><option>Todos los grados</option><option>1.º</option><option>2.º</option><option>3.º</option><option>4.º</option><option>5.º</option><option>6.º</option></select></div>`+T(['Matrícula','Nombre','Grado','Inscripción','Expediente'],S.map(s=>[s.id,s.n,secTag(s.g)+(s.area?' · '+areaTag(s.area):''),pill(s.st,s.st=='Pendiente'?'w':''),`<button class="btn o" data-exp="${s.id}">Abrir</button>`])),
+ registro:()=>head('Registrar estudiante','Completa los datos para crear el expediente.')+`<form id="reg" class="card"><div class="body fm"><label>Nombres<input name="nom" required></label><label>Apellidos<input name="ape" required></label><label>Fecha de nacimiento<input type="date" name="fn" required></label><label>Grado<select name="g"><optgroup label="Primer ciclo"><option>1.º</option><option>2.º</option><option>3.º</option></optgroup><optgroup label="Segundo ciclo"><option>4.º</option><option>5.º</option><option>6.º</option></optgroup></select></label><label>Sección<select name="sec" id="rsec"></select></label><label id="rarea" hidden>Área técnica<select name="area">${AREAS.map(a=>`<option>${a}</option>`).join('')}</select></label><label>Nombre del tutor<input name="tut" required></label><label>Teléfono<input name="tel" type="tel" required></label><label>Correo<input name="cor" type="email"></label><label>Modalidad de cobro<select name="mod"><option>Mensualidad</option><option>Aporte</option><option>Gratis</option></select></label></div><div class="body" style="border-top:1px solid var(--line)"><h3>Documentos recibidos</h3><p style="margin-bottom:8px">Marca los que la familia ya entregó.</p>${DOCS.map((d,i)=>`<label class="chk"><input type="checkbox" name="d${i}"> ${d}</label>`).join('')}</div><div class="body"><button class="btn" type="submit">Guardar y crear expediente</button></div></form>`,
+ expedientes:()=>head('Expedientes','Carpeta digital de cada estudiante.')+legend()+CICLOS.map(c=>`<h2 style="font-size:22px;margin:10px 0 14px">${c.t}</h2>`+c.g.map(gr=>`<h3 class="${gc(gr)}" style="margin:6px 0 12px;border-left:6px solid var(--sc);padding-left:10px">Carpeta de ${gr} de secundaria</h3><div class="bar">${SEC[gr].map(x=>`<span class="sec ${gc(gr)}">Sección ${x} · ${S.filter(s=>s.g==gr+' '+x).length}</span>`).join('')}${CICLOS[1].g.includes(gr)?AREAS.map(a=>`<span class="sec" style="--sc:${AC[a]}">${a} · ${S.filter(s=>s.g.startsWith(gr)&&s.area==a).length}</span>`).join(''):''}</div>`+(S.filter(s=>s.g.startsWith(gr)).length?`<div class="grid">${S.filter(s=>s.g.startsWith(gr)).sort((a,b)=>a.g.localeCompare(b.g)).map(s=>{const n=s.docs.filter(Boolean).length;return `<div class="card ${gc(s.g)}" style="border-left:6px solid var(--sc)"><div class="body"><h3>${s.n}</h3><p>${s.id} · ${secTag(s.g)}${s.area?' · '+areaTag(s.area):''}</p><p style="margin-top:8px">${pill(n+' de '+DOCS.length+' documentos',n==DOCS.length?'':'w')}</p></div><button class="go" data-exp="${s.id}">Abrir expediente <span>›</span></button></div>`}).join('')}</div>`:'<p style="margin-bottom:18px;color:var(--muted)">Sin estudiantes registrados.</p>')).join('')).join(''),
+ expediente:()=>{const s=S.find(x=>x.id==cur)||S[0];const m=note;note='';return head('Expediente: '+s.n,'Matrícula '+s.id+' · '+s.g)+(m?`<div class="banner"><div><b>${m}</b>Revisa los documentos entregados.</div></div>`:'')+`<div class="card ${gc(s.g)}" style="border-left:6px solid var(--sc)"><div class="body"><div class="row"><span>Sección</span><span>${secTag(s.g)}</span></div>${s.area?`<div class="row"><span>Área técnica</span><span>${areaTag(s.area)}</span></div>`:''}<div class="row"><span>Estado</span><span>${pill(s.st,s.st=='Pendiente'?'w':'')}</span></div><div class="row"><span>Tutor</span><span>${s.tut||'—'}</span></div><div class="row"><span>Teléfono</span><span>${s.tel||'—'}</span></div></div></div><div class="card"><div class="body"><h3>Documentos</h3><p style="margin-bottom:8px">Adjunta el escaneo de cada documento (PDF o imagen).</p>${DOCS.map((d,i)=>`<div class="row" style="grid-template-columns:1fr 1fr"><label class="chk"><input type="checkbox" data-doc="${i}" ${s.docs[i]?'checked':''}> ${d}</label><span style="color:var(--ink)">${(s.files&&s.files[i])?'Adjunto: '+s.files[i]:`<input type="file" data-file="${i}" accept=".pdf,image/*" aria-label="Adjuntar ${d}">`}</span></div>`).join('')}</div></div><button class="btn o" data-go="expedientes">Volver a expedientes</button>`},
+ personal:()=>head('Personal','Docentes, administración y personal de apoyo.')+T(['Código','Nombre','Cargo','Área','Estado'],[['EMP-0231','Laura Méndez','Docente','Matemática',pill('Activo')],['EMP-0245','Pedro Castillo','Docente','Inglés',pill('Activo')],['EMP-0018','Roberto Díaz','Director administrativo','Administración',pill('Activo')],['EMP-0307','Marta Jiménez','Conserje','Apoyo',pill('Activo')],['EMP-0312','Luis Báez','Seguridad','Apoyo',pill('Licencia','w')]]),
+ tesoreria:()=>tesView(),
+ avisos,perfil},
+apoyo:{
+ inicio:()=>head('Bienvenido(a), '+P.apoyo.name,'Consulta tus tareas, solicitudes y turnos.')+`<div class="grid">${stat(5,'tareas para hoy')}${stat(3,'solicitudes abiertas')}${stat('Mañana','turno de esta semana')}</div><div class="grid">${link('Tareas del día','Marca lo que ya completaste.','tareas','Ver tareas')}${link('Solicitudes','Reportes de limpieza y mantenimiento.','solicitudes','Ver solicitudes')}${link('Mis turnos','Calendario semanal de trabajo.','turnos','Ver turnos')}</div>`,
+ tareas:()=>head('Tareas del día','Lunes, 19 de octubre.')+`<div class="card scroll"><table id="tasks"><tr><th>Hecha</th><th>Tarea</th><th>Zona</th></tr>${[['Limpiar aulas del segundo piso','Edificio B'],['Revisar baños y reponer insumos','Planta baja'],['Preparar el salón de actos','Salón principal'],['Regar jardines','Patio'],['Recoger residuos del comedor','Comedor']].map(([t,z])=>`<tr><td><input type="checkbox" aria-label="${t}"></td><td>${t}</td><td>${z}</td></tr>`).join('')}</table></div>`,
+ solicitudes:()=>head('Solicitudes','Reportes asignados a ti.')+T(['Fecha','Solicitud','Lugar','Estado'],[['19 oct','Lámpara fundida','Aula 12',pill('Pendiente','w')],['18 oct','Derrame en el pasillo','Edificio A',pill('Atendida')],['17 oct','Puerta que no cierra','Laboratorio 2',pill('Pendiente','w')]]),
+ turnos:()=>head('Mis turnos','Semana del 19 al 23 de octubre.')+T(['Día','Turno','Horario'],[['Lunes','Mañana','6:00 AM – 2:00 PM'],['Martes','Mañana','6:00 AM – 2:00 PM'],['Miércoles','Descanso','—'],['Jueves','Tarde','1:00 PM – 9:00 PM'],['Viernes','Tarde','1:00 PM – 9:00 PM']]),
+ avisos,perfil}
+};
+const DOCS=['Acta de nacimiento','Certificado médico','Boletín del año anterior','Foto 2x2','Cédula del tutor'];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S=[{id:'2026-0142',n:'Ana María Pérez',g:'2.º B',st:'Inscrita',tut:'Carlos Pérez',tel:'809-555-0123',docs:[1,1,1,1,1]},{id:'2026-0151',n:'Carlos Almonte',g:'2.º B',st:'Inscrito',tut:'Rosa Almonte',tel:'809-555-0177',docs:[1,1,1,1,1]},{id:'2026-0187',n:'Daniela Rosario',g:'3.º A',st:'Pendiente',tut:'Juan Rosario',tel:'809-555-0199',docs:[1,0,1,0,1]},{id:'2026-0203',n:'Esteban Reyes',g:'1.º A',st:'Inscrito',tut:'María Reyes',tel:'809-555-0134',docs:[1,1,1,1,1]},{id:'2026-0219',n:'Fiorella Núñez',g:'3.º A',st:'Pendiente',tut:'Luis Núñez',tel:'809-555-0161',docs:[1,1,0,0,0]},{id:'2026-0110',n:'Gabriel Santana',g:'4.º A',area:'Informática',st:'Inscrito',tut:'Ana Santana',tel:'809-555-0188',docs:[1,1,1,1,0]},{id:'2026-0120',n:'Helena Cruz',g:'6.º B',area:'Gastronomía',st:'Inscrita',tut:'Pablo Cruz',tel:'809-555-0145',docs:[1,1,1,1,1]}];
+let cur='',note='';
+const gc=g=>'g'+g[0];
+const secTag=g=>{const[a,b]=g.split(' ');return a+' <span class="sec '+gc(g)+'">Sección '+b+'</span>'};
+const legend=()=>`<div class="bar" style="align-items:center"><span style="color:var(--muted)">Grados:</span>${GRADES.map(g=>`<span class="sec ${gc(g)}">${g}</span>`).join('')}</div>`;
+const GRADES=['1.º','2.º','3.º','4.º','5.º','6.º'],SEC={},AREAS=['Administración','Gastronomía','Electricidad','Informática'],AC={'Administración':'#16a9b8','Gastronomía':'#dc2f2f','Electricidad':'#2748d1','Informática':'#f28a1a'};
+const areaTag=a=>a?`<span class="sec" style="--sc:${AC[a]}">${a}</span>`:'';
+const fee=s=>{if(!s.mod)s.mod='Mensualidad';if(s.monto==null)s.monto=s.mod=='Mensualidad'?4200:s.mod=='Gratis'?0:500;if(s.pagado==null)s.pagado=s.st!='Pendiente';return s};
+const rd=n=>'RD$ '+Number(n).toLocaleString('en-US');
+const tesView=()=>{S.forEach(fee);const pg=S.filter(s=>s.mod!='Gratis'),sum=a=>a.reduce((t,s)=>t+Number(s.monto),0);return head('Tesorería','Cobros de octubre. Cada estudiante puede pagar mensualidad, hacer un aporte o ser gratis.')+`<div class="grid">${stat(rd(sum(pg.filter(s=>s.pagado))),'cobrado')}${stat(rd(sum(pg.filter(s=>!s.pagado))),'pendiente')}${stat(S.filter(s=>s.mod=='Gratis').length,'estudiantes gratis')}${stat(S.filter(s=>s.mod=='Aporte').length,'con aporte')}</div>`+T(['Estudiante','Grado','Modalidad','Monto','Estado'],S.map(s=>[s.n,secTag(s.g),`<select data-mod="${s.id}" aria-label="Modalidad de ${s.n}">${['Mensualidad','Aporte','Gratis'].map(m=>`<option${m==s.mod?' selected':''}>${m}</option>`).join('')}</select>`,s.mod=='Aporte'?`<input type="number" min="0" step="50" value="${s.monto}" data-monto="${s.id}" aria-label="Aporte de ${s.n}" style="width:100px">`:rd(s.monto),s.mod=='Gratis'?pill('Exento'):`<label class="chk"><input type="checkbox" data-paid="${s.id}" ${s.pagado?'checked':''}> ${s.pagado?'Pagado':'Pendiente'}</label>`]))};
+GRADES.forEach(g=>SEC[g]=['A','B','C','D','E']);
+V.admin.secciones=()=>head('Secciones y áreas','Edita el nombre de las secciones de cada grado. El color identifica el grado.')+GRADES.map(gr=>`<div class="card ${gc(gr)}" style="border-left:6px solid var(--sc)"><div class="body"><h3>${gr} de secundaria</h3><div class="bar" style="margin-top:10px;align-items:center">${SEC[gr].map((x,i)=>`<label class="chk"><span class="sec ${gc(gr)}">Sección</span><input data-sec="${gr}|${i}" value="${esc(x)}" maxlength="10" aria-label="Sección ${i+1} de ${gr}" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:84px"></label>`).join('')}<button class="btn o" data-addsec="${gr}">Agregar sección</button></div></div></div>`).join('')+`<h3 style="margin:10px 0 8px">Áreas técnicas (4.º a 6.º)</h3><div class="bar">${AREAS.map(a=>areaTag(a)).join('')}</div>`;
+const ROLES={docente:'Docente',secre:'Secretaría',apoyo:'Personal de apoyo',admin:'Administración'};
+const api=async(url,m='GET',body)=>{try{const r=await fetch(url,{method:m,headers:{'Content-Type':'application/json','X-Requested-With':'fetch'},body:body?JSON.stringify(body):undefined,credentials:'same-origin'});const j=await r.json().catch(()=>({}));return r.ok?{ok:true,...j}:{ok:false,status:r.status,error:j.error||'Error del servidor.'}}catch(e){return{ok:false,error:'No se pudo conectar con el servidor.'}}};
+let ME=null,human=false,FIRST=false,USERS=[],lastU='',loaded=false,lastSave='';
+function authView(mode,msg,ok){
+ const first=FIRST,reg=mode=='register';
+ document.getElementById('auth').innerHTML=`<div class="card auth-card"><div class="body" style="text-align:center"><div class="crest alogo" style="margin:0 auto 12px">${document.getElementById('crest').innerHTML}</div><h2 style="font-size:24px;margin-bottom:4px;color:var(--brand)">${reg?'Crear cuenta':'Bienvenido a tu cuenta'}</h2><p style="margin-bottom:14px">${reg?(first?'Eres la primera persona en registrarse: tu cuenta será la de administrador.':'Tu cuenta quedará pendiente hasta que un administrador la apruebe.'):'Sistema académico '+esc(C.name)}</p>${msg?`<div class="banner" ${ok?'style="background:var(--ok-bg);color:var(--ok)"':''}><div>${msg}</div></div>`:''}<form id="af" class="fm" style="grid-template-columns:1fr;text-align:left">${reg?`<label>Nombre completo<input name="nom" required autocomplete="name"></label><label>Correo electrónico<input name="mail" type="email" required autocomplete="email"></label>${first?'':`<label>Cargo<select name="rol">${Object.entries(ROLES).filter(([k])=>k!='admin').map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label>`}`:''}<label>Usuario<input name="user" required autocomplete="username" ${reg?'pattern="[A-Za-z0-9._-]{3,20}" title="3 a 20 letras, números, punto, guion o guion bajo"':''}></label><label>Contraseña<input name="pw" type="password" required ${reg?'minlength="8"':''} autocomplete="${reg?'new-password':'current-password'}"></label>${reg?`<label>Confirmar contraseña<input name="pw2" type="password" required minlength="8" autocomplete="new-password"></label>`:''}<div class="vf"><label class="chk" id="vl"><input type="checkbox" id="vc"><span id="vt">Verificar que soy una persona</span></label></div><button class="btn" type="submit" style="padding:12px">${reg?'Crear cuenta':'Iniciar sesión'}</button></form>${reg?'':'<p style="margin-top:14px;text-align:right"><a href="#" id="fg">¿Olvidaste tu contraseña?</a></p>'}<p style="margin-top:10px"><button class="btn o" id="sw">${reg?'Ya tengo cuenta':'Crear una cuenta'}</button></p><p style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13px">¿Necesitas ayuda? <a href="mailto:${esc(C.mail)}">Contacta al soporte técnico</a></p></div></div>`;
+ document.getElementById('sw').onclick=()=>authView(reg?'login':'register');
+ human=false;
+ const vc=document.getElementById('vc');vc.onchange=()=>{if(!vc.checked)return;vc.disabled=true;document.getElementById('vt').textContent='Verificando…';setTimeout(()=>{human=true;document.getElementById('vl').innerHTML='<span class="vok">✓</span><span>¡Operación exitosa!</span>'},900)};
+ const fg=document.getElementById('fg');if(fg)fg.onclick=e=>{e.preventDefault();authView('login','Para restablecer tu contraseña, contacta al soporte técnico del centro.')};
+ document.getElementById('af').onsubmit=async e=>{e.preventDefault();if(!human){document.getElementById('vt').textContent='Completa la verificación para continuar.';return}
+  const d=new FormData(e.target);e.target.querySelector('button[type=submit]').disabled=true;
+  if(!reg){const r=await api('/api/login','POST',{user:d.get('user'),pw:d.get('pw')});if(!r.ok)return authView('login',r.error);return enter(r.user)}
+  if(d.get('pw')!=d.get('pw2'))return authView('register','Las contraseñas no coinciden.');
+  const r=await api('/api/register','POST',{user:d.get('user'),pw:d.get('pw'),nom:d.get('nom'),mail:d.get('mail'),rol:d.get('rol')});
+  if(!r.ok)return authView('register',r.error);
+  FIRST=false;authView('login',r.first?'Cuenta de administrador creada. Ya puedes entrar.':'Cuenta creada. Un administrador debe aprobarla antes de que puedas entrar.',true)}
+}
+async function enter(a){
+ ME=a;role=a.rol;view='inicio';P[role].name=a.nom;P[role].ini=a.nom[0].toUpperCase();
+ const r=await api('/api/data/school');S.length=0;
+ if(r.ok&&r.data){S.push(...(r.data.S||[]));for(const g in (r.data.SEC||{}))SEC[g]=r.data.SEC[g];Object.assign(C,r.data.C||{})}
+ lastSave=JSON.stringify({S,SEC,C});loaded=true;
+ document.getElementById('auth').innerHTML='';['app','rt','out'].forEach(i=>document.getElementById(i).style.display='');render()}
+function persist(){if(!loaded||!ME||!['admin','secre'].includes(ME.rol))return;const j=JSON.stringify({S,SEC,C});if(j===lastSave)return;lastSave=j;api('/api/data/school','PUT',{data:{S,SEC,C}})}
+const auth={async init(){
+ document.getElementById('out').onclick=async()=>{await api('/api/logout','POST');ME=null;loaded=false;['app','rt','out'].forEach(i=>document.getElementById(i).style.display='none');brand();authView('login')};
+ const s=await api('/api/status');FIRST=!!s.first;if(s.center)Object.assign(C,s.center);brand();
+ const m=await api('/api/me');if(m.ok)return enter(m.user);authView(FIRST?'register':'login')}};
+async function loadUsers(force){const r=await api('/api/users');if(!r.ok)return;const j=JSON.stringify(r.users);if(j!==lastU||force){lastU=j;USERS=r.users;if(view=='usuarios')render()}}
+V.admin.usuarios=()=>{loadUsers();return head('Usuarios y accesos','Aprueba las cuentas nuevas y define el cargo de cada persona.')+T(['Nombre','Usuario','Cargo','Estado','Acciones'],USERS.map(a=>{const me=a.id==ME.id,pc=a.estado=='activo'?'':a.estado=='pendiente'?'w':'b';return [esc(a.nom)+'<br><small style="color:var(--muted)">'+esc(a.mail)+'</small>',esc(a.user),me?ROLES[a.rol]:`<select data-urol="${a.id}" aria-label="Cargo de ${esc(a.user)}">${Object.entries(ROLES).map(([k,v])=>`<option value="${k}"${k==a.rol?' selected':''}>${v}</option>`).join('')}</select>`,pill(a.estado,pc),me?'Tu cuenta':(a.estado=='activo'?`<button class="btn o" data-ua="${a.id}|off">Desactivar</button>`:`<button class="btn" data-ua="${a.id}|ok">Aprobar</button>`+(a.estado=='pendiente'?` <button class="btn o" data-ua="${a.id}|no">Rechazar</button>`:''))+` <button class="btn o" data-pw="${a.id}">Restablecer contraseña</button>`]}))};
+const CICLOS=[{t:'Primer ciclo · 1.º a 3.º de secundaria',g:['1.º','2.º','3.º']},{t:'Segundo ciclo · 4.º a 6.º de secundaria',g:['4.º','5.º','6.º']}];
+const C={name:'Colegio Horizonte',dir:'Av. Principal #123, Santo Domingo Este',mail:'info@colegiohorizonte.edu.do',tel:'809-555-0100',logo:''};
+function brand(){document.getElementById('cn').textContent=C.name;document.getElementById('ci').textContent=[C.dir,C.mail,C.tel].filter(Boolean).join(' · ');document.getElementById('crest').innerHTML=C.logo?`<img src="${C.logo}" alt="Logo de ${esc(C.name)}">`:esc(C.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase())}
+V.admin.centro=()=>head('Datos del centro','Esta información aparece en el encabezado de todo el portal.')+`<form id="cen" class="card"><div class="body fm"><label>Nombre del centro<input name="name" value="${esc(C.name)}" required></label><label>Dirección<input name="dir" value="${esc(C.dir)}"></label><label>Correo electrónico<input name="mail" type="email" value="${esc(C.mail)}"></label><label>Teléfono<input name="tel" type="tel" value="${esc(C.tel)}"></label><label>Logo o foto del centro<input type="file" name="logo" accept="image/*"></label></div><div class="body"><button class="btn" type="submit">Guardar datos</button> <span id="cm"></span></div></form>`;
+V.secre={inicio:()=>head('Bienvenido(a), '+P.secre.name,'Registra estudiantes y mantén al día sus expedientes.')+`<div class="grid">${stat(S.length,'estudiantes registrados')}${stat(S.filter(s=>s.docs.includes(0)).length,'con documentos pendientes')}</div><div class="grid">${link('Registrar estudiante','Crea el expediente de un nuevo ingreso.','registro','Nuevo registro')}${link('Expedientes por grado','Revisa y completa los documentos de cada carpeta.','expedientes','Ver carpetas')}</div>`,registro:V.admin.registro,secciones:()=>V.admin.secciones(),estudiantes:V.admin.estudiantes,expedientes:V.admin.expedientes,expediente:V.admin.expediente,avisos,perfil};
+let role='docente',view='inicio';
+const nav=document.getElementById('nav'),main=document.getElementById('main');
+function render(){
+  persist();brand();
+  const p=P[role];
+  document.getElementById('who').textContent=p.name;document.getElementById('av').textContent=p.ini;
+  nav.innerHTML=p.nav.map(([g,items])=>`<p>${g}</p>`+items.map(([id,l])=>`<button data-v="${id}" class="${id===view?'on':''}">${l}</button>`).join('')).join('');
+  main.innerHTML=V[role][view]();
+  nav.classList.remove('open');scrollTo(0,0);
+  nav.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;render()});
+  main.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{view=b.dataset.go;render()});
+  const tb=[...main.querySelectorAll('.tabs button')],tp=[...main.querySelectorAll('.tp')];
+  tb.forEach(b=>b.onclick=()=>{tb.forEach(x=>x.classList.toggle('on',x===b));tp.forEach((q,i)=>q.hidden=i!=b.dataset.t)});
+  main.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{cur=b.dataset.exp;view='expediente';render()});
+  main.querySelectorAll('[data-file]').forEach(f=>f.onchange=()=>{const s=S.find(x=>x.id==cur),i=f.dataset.file;if(!f.files[0])return;s.files=s.files||{};s.files[i]=esc(f.files[0].name);s.docs[i]=1;render()});
+  main.querySelectorAll('[data-doc]').forEach(c=>c.onchange=()=>{S.find(x=>x.id==cur).docs[c.dataset.doc]=c.checked?1:0});
+  const keep=fn=>{const y=scrollY;fn();render();scrollTo(0,y)};
+  main.querySelectorAll('[data-mod]').forEach(x=>x.onchange=()=>keep(()=>{const s=S.find(t=>t.id==x.dataset.mod);s.mod=x.value;s.monto=x.value=='Mensualidad'?4200:x.value=='Gratis'?0:500}));
+  main.querySelectorAll('[data-monto]').forEach(x=>x.onchange=()=>keep(()=>{S.find(t=>t.id==x.dataset.monto).monto=Math.max(0,Number(x.value)||0)}));
+  main.querySelectorAll('[data-paid]').forEach(x=>x.onchange=()=>keep(()=>{S.find(t=>t.id==x.dataset.paid).pagado=x.checked}));
+  main.querySelectorAll('[data-ua]').forEach(b=>b.onclick=async()=>{const[id,a]=b.dataset.ua.split('|');const r=await api('/api/users/'+id,'POST',{estado:a=='ok'?'activo':a=='no'?'rechazada':'desactivada'});if(!r.ok)alert(r.error);loadUsers(true)});
+  main.querySelectorAll('[data-urol]').forEach(s=>s.onchange=async()=>{const r=await api('/api/users/'+s.dataset.urol,'POST',{rol:s.value});if(!r.ok)alert(r.error);loadUsers(true)});
+  main.querySelectorAll('[data-pw]').forEach(b=>b.onclick=async()=>{const p=prompt('Contraseña temporal (mínimo 8 caracteres):');if(!p)return;const r=await api('/api/users/'+b.dataset.pw+'/password','POST',{pw:p});alert(r.ok?'Contraseña actualizada. Pídele a la persona que la use para entrar.':r.error)});
+  const rg=document.querySelector('#reg [name=g]');if(rg){const up=()=>{document.getElementById('rsec').innerHTML=SEC[rg.value].map(x=>`<option>${x}</option>`).join('');document.getElementById('rarea').hidden=GRADES.indexOf(rg.value)<3};rg.onchange=up;up()}
+  main.querySelectorAll('[data-sec]').forEach(i=>i.onchange=()=>{const[gr,k]=i.dataset.sec.split('|'),old=SEC[gr][k],nv=i.value.trim().replace(/[^\w\u00C0-\u00FF-]+/g,'-');if(!nv||SEC[gr].includes(nv)){i.value=old;return}S.forEach(s=>{if(s.g==gr+' '+old)s.g=gr+' '+nv});SEC[gr][k]=nv;i.value=nv});
+  main.querySelectorAll('[data-addsec]').forEach(b=>b.onclick=()=>{const a=SEC[b.dataset.addsec];let n=a.length+1;while(a.includes('S'+n))n++;a.push('S'+n);render()});
+  const f=document.getElementById('reg');if(f)f.onsubmit=e=>{e.preventDefault();const d=new FormData(f);const id='2026-0'+(220+S.length);S.push({id,n:esc(d.get('nom')+' '+d.get('ape')),g:d.get('g')+' '+d.get('sec'),area:GRADES.indexOf(d.get('g'))>2?d.get('area'):'',st:'Pendiente',mod:d.get('mod'),tut:esc(d.get('tut')),tel:esc(d.get('tel')),docs:DOCS.map((_,i)=>d.get('d'+i)?1:0)});cur=id;note='Expediente creado';view='expediente';render()};
+  const cf=document.getElementById('cen');if(cf)cf.onsubmit=e=>{e.preventDefault();const d=new FormData(cf);C.name=d.get('name');C.dir=d.get('dir');C.mail=d.get('mail');C.tel=d.get('tel');const fl=d.get('logo');const done=()=>{brand();document.getElementById('cm').textContent='Guardado'};if(fl&&fl.size){const r=new FileReader();r.onload=()=>{C.logo=r.result;done()};r.readAsDataURL(fl)}else done()};
+  const s=document.getElementById('saveAtt');if(s)s.onclick=()=>{document.getElementById('msg').textContent='Guardado'};
+  const tk=document.getElementById('tasks');if(tk)tk.onchange=e=>e.target.closest('tr').classList.toggle('done',e.target.checked);
+}
+document.querySelectorAll('.roles button').forEach(b=>b.onclick=()=>{
+  role=b.dataset.r;view='inicio';
+  document.querySelectorAll('.roles button').forEach(x=>x.classList.toggle('on',x===b));render();
+});
+document.getElementById('mb').onclick=()=>nav.classList.toggle('open');
+auth.init();
+</script>
+</body>
+</html>
