@@ -56,7 +56,10 @@ function studentsFor(u,list){
 
 
 
+let READY=false,DBERR=null;
+process.on('unhandledRejection',e=>console.error('Error no controlado:',e&&e.message));
 const app=express();app.set('trust proxy',1);app.use(express.json({limit:'8mb'}),cookieParser());
+app.use('/api',(req,res,next)=>READY?next():res.status(503).json({msg:'La base de datos no está lista. Abre /diag para ver el motivo.'}));
 const tries=new Map();
 const limited=k=>{const n=Date.now(),t=(tries.get(k)||[]).filter(x=>n-x<9e5);tries.set(k,t);return t.length>=10};
 const fail=k=>tries.set(k,[...(tries.get(k)||[]),Date.now()]);
@@ -142,5 +145,16 @@ function loadIndex(){
   return h}
 app.get(['/','/index.html'],(req,res)=>{const h=loadIndex();if(!h)return res.status(404).send('Falta public/index.html');res.set('Cache-Control','no-cache').type('html').send(h)});
 app.get('/server-api.js',(req,res)=>res.set('Cache-Control','no-cache').type('js').send(SERVER_API));
+/* Estado del servidor, sin datos secretos: abre /diag en el navegador */
+app.get('/diag',(req,res)=>{
+  const c=DBERR&&DBERR.code,hint=!DBERR?'':/ECONNREFUSED|ENOTFOUND|ETIMEDOUT|EAI_AGAIN/.test(c||DBERR.message)?'No se encuentra el servidor MySQL. Revisa DATABASE_URL (o DB_HOST y DB_PORT) y que Aiven permita conexiones.':/ACCESS_DENIED/.test(c||'')?'Usuario o contraseña de MySQL incorrectos. Revisa DATABASE_URL.':/SSL|CERT|HANDSHAKE|self.signed|unable to verify/i.test((c||'')+DBERR.message)?'Problema con la conexión cifrada. Agrega la variable DB_SSL con el valor relaxed.':/ER_BAD_DB|UNKNOWN_DB/.test(c||'')?'La base de datos indicada no existe. Revisa el nombre al final de DATABASE_URL.':'Revisa las variables de conexión a MySQL.';
+  const f=[path.join(__dirname,'public','index.html'),path.join(__dirname,'index.html')].map(x=>x.replace(__dirname,'.')+': '+(fs.existsSync(x)?'existe ('+fs.statSync(x).size+' bytes)':'no existe'));
+  res.type('text/plain').send(['SERVIDOR DEL PORTAL · versión 31-10-2026 (diag)','',
+   'Base de datos: '+(READY?'LISTA':'NO LISTA'),DBERR?'Motivo: '+(c||'')+' '+String(DBERR.message).slice(0,160):'',DBERR?'Qué hacer: '+hint:'','',
+   'Variables definidas (solo se indica si existen):',
+   '  DATABASE_URL: '+(E.DATABASE_URL?'sí':'no'),'  DB_HOST: '+(E.DB_HOST?'sí':'no'),'  DB_SSL: '+(E.DB_SSL||'no'),'  DB_CA: '+(E.DB_CA?'sí':'no'),'  JWT_SECRET: '+(E.JWT_SECRET?'sí':'no (se usa una clave propia guardada en la base)'),'  NODE_ENV: '+(E.NODE_ENV||'no'),'',
+   'Archivos de la página:'].concat(f).filter(x=>x!==undefined).join('\n'))});
 app.use(express.static(path.join(__dirname,'public')));
-init().then(()=>app.listen(E.PORT||3000,()=>console.log('Portal listo'))).catch(e=>{console.error('No se pudo conectar a MySQL:',e.message);process.exit(1)});
+app.listen(E.PORT||3000,()=>console.log('Portal escuchando'));
+const tryInit=()=>init().then(()=>{READY=true;DBERR=null;console.log('Portal listo')}).catch(e=>{DBERR=e;console.error('No se pudo conectar a MySQL:',e.code||'',e.message);setTimeout(tryInit,20000)});
+tryInit();
