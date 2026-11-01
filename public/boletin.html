@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Boletín de calificaciones</title>
+<style>*{box-sizing:border-box}body{margin:0;font:16px/1.5 Georgia,serif;background:#f4f4f4;color:#111}main{max-width:680px;margin:0 auto;padding:16px}.c{background:#fff;border:1px solid #ddd;border-radius:10px;padding:16px;margin-bottom:12px}h1{font-size:20px;margin:0 0 4px}.m{color:#555;font-size:14px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid #ddd;padding:6px 4px;text-align:center}th:first-child,td:first-child{text-align:left}.ok{color:#1a7f45;font-weight:bold}.no{color:#c00;font-weight:bold}.lg{max-height:56px;max-width:140px;margin-bottom:8px}.tw{overflow-x:auto}.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.tabs button{font:inherit;padding:8px 14px;border:1px solid #bbb;border-radius:8px;background:#fff;cursor:pointer}.tabs button.on{background:#c8102e;color:#fff;border-color:#c8102e}</style></head>
+<body><main id="m"><div class="c">Cargando…</div></main>
+<script>
+const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';'),V=x=>x===null||x===undefined?'':x,CG=['Comunicativa','Pensamiento lógico','Científica y tecnológica','Ética y ciudadana'];
+let D,T=0;
+function draw(){const m=document.getElementById('m'),r=D.rows,p=T<4;
+ const head='<div class="c">'+(D.logo?'<img class="lg" alt="Logo" src="'+E(D.logo)+'"><br>':'')+'<h1>'+E(D.centro.nombre||'Centro educativo')+'</h1><div class="m">Boletín de calificaciones'+(D.centro.anio?' · Año escolar '+E(D.centro.anio.replace('-',' / ')):'')+'</div><div style="margin-top:10px"><b>'+E(D.est.nombre)+'</b><br>ID '+E(D.est.id)+' · '+E(D.est.grado)+' grado · Sección '+E(D.est.seccion)+(D.est.area?' · '+E(D.est.area):'')+'</div></div>';
+ const tabs='<div class="tabs">'+['P1','P2','P3','P4','Final'].map((t,i)=>'<button data-t="'+i+'" class="'+(i==T?'on':'')+'">'+t+'</button>').join('')+'</div>';
+ let body;
+ if(p){const hasC=r.some(x=>x.c);body='<div class="c tw"><table><tr><th>Asignatura</th><th>Nota P'+(T+1)+'</th>'+(hasC?CG.map(g=>'<th>'+g+'</th>').join(''):'')+'</tr>'+r.map(x=>'<tr><td>'+E(x.n)+'</td><td><b>'+V(x.pc[T])+'</b></td>'+(hasC?[0,1,2,3].map(g=>'<td>'+V(x.c?x.c[g*4+T]:null)+'</td>').join(''):'')+'</tr>').join('')+'</table></div>'}
+ else body='<div class="c tw"><table><tr><th>Asignatura</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>C.F.</th></tr>'+r.map(x=>'<tr><td>'+E(x.n)+'</td>'+x.pc.map(v=>'<td>'+V(v)+'</td>').join('')+'<td class="'+(x.cf===null?'':x.cf>=70?'ok':'no')+'">'+V(x.cf)+'</td></tr>').join('')+'</table></div><div class="c"><b>Situación final: '+(D.estado?E(D.estado):'pendiente')+'</b></div>';
+ m.innerHTML=head+tabs+body+'<div class="m" style="text-align:center">Consulta informativa. El documento oficial es el boletín impreso, firmado y sellado por el centro.</div>';
+ m.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{T=+b.dataset.t;draw()})}
+(async()=>{const m=document.getElementById('m'),tk=location.pathname.split('/').filter(Boolean).pop();
+try{const r=await fetch('/api/boletin/'+encodeURIComponent(tk));const d=await r.json();if(!r.ok){m.innerHTML='<div class="c">'+E(d.msg||'Boletín no disponible')+'</div>';return}
+D=d;T=3;while(T>0&&!d.rows.some(x=>x.pc[T]!==null))T--;draw()}catch(e){m.innerHTML='<div class="c">No se pudo cargar. Intenta de nuevo en un momento.</div>'}})();
+</script></body></html>
